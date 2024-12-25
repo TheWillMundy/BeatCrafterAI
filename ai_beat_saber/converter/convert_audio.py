@@ -11,6 +11,7 @@ from typing import Union, List
 import soundfile as sf
 from tqdm import tqdm
 import warnings
+import json
 
 class AudioConverter:
     """Convert audio files to MIDI format."""
@@ -46,6 +47,27 @@ class AudioConverter:
         
         # Return the full output path
         return self.output_dir / midi_name
+    
+    def _get_song_bpm(self, audio_path: Path) -> float:
+        """Get the BPM from the song's info.dat file.
+        
+        Args:
+            audio_path: Path to the audio file
+            
+        Returns:
+            BPM from info.dat, or None if not found
+        """
+        info_path = audio_path.parent / 'info.dat'
+        if info_path.exists():
+            try:
+                with open(info_path) as f:
+                    info_data = json.load(f)
+                    if '_beatsPerMinute' in info_data:
+                        # Round to 2 decimal places for consistent display
+                        return round(float(info_data['_beatsPerMinute']), 2)
+            except Exception:
+                pass
+        return None
     
     async def convert_audio(self, audio_path: Union[str, Path]) -> Path:
         """Convert a single audio file to MIDI.
@@ -112,12 +134,13 @@ class AudioConverter:
                     threshold=0.1  # Add threshold to filter out very quiet sounds
                 )
             
-            # Create a PrettyMIDI object
-            pm = pretty_midi.PrettyMIDI()
+            # Create a PrettyMIDI object with the song's BPM if available
+            bpm = self._get_song_bpm(input_path)
+            pm = pretty_midi.PrettyMIDI(initial_tempo=bpm if bpm is not None else 120.0)
             
-            # Create a piano program
-            piano_program = pretty_midi.instrument_name_to_program('Acoustic Grand Piano')
-            piano = pretty_midi.Instrument(program=piano_program)
+            # Create a voice program instead of piano
+            voice_program = pretty_midi.instrument_name_to_program('Choir Aahs')  # Using choir voice
+            voice = pretty_midi.Instrument(program=voice_program)
             
             # Convert pitch detections to MIDI notes with onset detection
             onset_frames = librosa.onset.onset_detect(
@@ -166,10 +189,10 @@ class AudioConverter:
                                 start=start_time,
                                 end=start_time + duration
                             )
-                            piano.notes.append(note)
+                            voice.notes.append(note)
             
             # Add the instrument to the PrettyMIDI object
-            pm.instruments.append(piano)
+            pm.instruments.append(voice)
             
             # Write out the MIDI file
             pm.write(str(output_path))
