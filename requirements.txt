@@ -1,0 +1,7 @@
+httpx
+librosa
+numpy
+python-dotenv
+pydantic
+tqdm
+ffmpeg-python
