@@ -69,6 +69,22 @@ class AudioConverter:
                 pass
         return None
     
+    def _is_valid_audio_file(self, audio_path: Path) -> bool:
+        """Check if the file is a valid audio file.
+        
+        Args:
+            audio_path: Path to the audio file
+            
+        Returns:
+            True if the file is a valid audio file, False otherwise
+        """
+        try:
+            # Try to load a small portion of the file with librosa
+            y, sr = librosa.load(str(audio_path), duration=0.1)
+            return True
+        except Exception:
+            return False
+    
     async def convert_audio(self, audio_path: Union[str, Path]) -> Path:
         """Convert a single audio file to MIDI.
         
@@ -87,15 +103,8 @@ class AudioConverter:
             raise FileNotFoundError(f"Input file not found: {audio_path}")
         
         # Validate file before processing
-        try:
-            with open(audio_path, 'rb') as f:
-                header = f.read(4)
-                if header not in (b'OggS', b'RIFF'):  # Common headers for .ogg and .egg files
-                    raise Exception("Invalid audio file format")
-        except Exception as e:
-            if "Invalid audio file format" in str(e):
-                raise
-            raise Exception("Invalid audio file: Failed to read file header")
+        if not self._is_valid_audio_file(audio_path):
+            raise Exception("Invalid audio file format")
         
         # Generate output path based on song folder structure
         output_path = self._generate_output_path(audio_path)
@@ -207,7 +216,7 @@ class AudioConverter:
             List of paths to the generated MIDI files or exceptions for failed conversions
         """
         audio_files = []
-        for ext in ('*.egg', '*.ogg'):
+        for ext in ('*.egg', '*.ogg', '*.mp3', '*.m4a'):  # Added mp3 and m4a
             audio_files.extend(self.songs_dir.rglob(ext))
         
         if not audio_files:
