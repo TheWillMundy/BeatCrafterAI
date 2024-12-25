@@ -1,7 +1,11 @@
-httpx
-librosa
-numpy
-python-dotenv
-pydantic
-tqdm
-ffmpeg-python
+httpx==0.25.2
+librosa==0.10.1
+numpy==1.26.2
+python-dotenv==1.0.0
+pydantic==2.5.2
+tqdm==4.66.1
+ffmpeg-python==0.2.0
+
+# Testing dependencies
+pytest==7.4.3
+pytest-asyncio==0.21.1
