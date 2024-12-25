@@ -1,8 +1,10 @@
-import asyncio
 import pytest
 from pathlib import Path
 
 from ai_beat_saber.downloader.scrape_and_download import BeatSaverDownloader
+
+# Optional package for progress bars
+tqdm = pytest.importorskip("tqdm")
 
 @pytest.mark.asyncio
 async def test_fetch_ranked_maps():
@@ -53,10 +55,11 @@ async def test_download_single_map(temp_download_dir):
     download_url = first_song["versions"][0]["downloadURL"]
     
     # Create a simple progress bar for testing
-    progress = pytest.importorskip("tqdm").tqdm(total=1)
+    progress = tqdm.tqdm(total=1)
     
     # Download the song
-    await downloader.download_map(song_id, download_url, progress)
+    success = await downloader.download_map(song_id, download_url, progress)
+    assert success, "Download should succeed"
     
     # Verify the file exists and has content
     zip_path = temp_download_dir / f"{song_id}.zip"
@@ -69,7 +72,9 @@ async def test_download_multiple_pages(temp_download_dir):
     downloader = BeatSaverDownloader(max_pages=2)
     downloader.download_path = temp_download_dir
     
-    await downloader.download_all()
+    results = await downloader.download_all()
+    assert len(results) > 0, "Should have some download results"
+    assert any(results), "At least one download should succeed"
     
     # Verify we downloaded some files
     downloaded_files = list(temp_download_dir.glob("*.zip"))
@@ -86,13 +91,15 @@ async def test_skip_existing_downloads(temp_download_dir):
     downloader.download_path = temp_download_dir
     
     # First download
-    await downloader.download_all()
+    first_results = await downloader.download_all()
     first_count = len(list(temp_download_dir.glob("*.zip")))
-    assert first_count > 0
+    assert first_count > 0, "First download should succeed"
     
     # Second download of same page
-    await downloader.download_all()
+    second_results = await downloader.download_all()
     second_count = len(list(temp_download_dir.glob("*.zip")))
     
     # Verify we didn't download duplicates
-    assert first_count == second_count 
+    assert first_count == second_count
+    # Verify all second attempts were marked as successful (skipped)
+    assert all(second_results) 

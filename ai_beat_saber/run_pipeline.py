@@ -5,6 +5,7 @@ Main pipeline script for downloading, processing, and generating Beat Saber maps
 import asyncio
 from pathlib import Path
 import argparse
+import json
 
 from ai_beat_saber.downloader.scrape_and_download import BeatSaverDownloader
 from ai_beat_saber.extractor.extract_maps import MapExtractor
@@ -57,7 +58,16 @@ async def run_pipeline(args):
     await downloader.download_all()
     
     print("Extracting maps...")
-    extractor.extract_all()
+    extracted_maps = extractor.extract_all()
+    print(f"Successfully extracted {len(extracted_maps)} maps")
+    
+    # Save extraction results for debugging/analysis
+    extraction_log = dirs["logs"] / "extraction_results.json"
+    with open(extraction_log, 'w', encoding='utf-8') as f:
+        json.dump({
+            'total_extracted': len(extracted_maps),
+            'maps': extracted_maps
+        }, f, indent=2)
     
     print("Converting audio to MIDI...")
     converter.convert_all()
