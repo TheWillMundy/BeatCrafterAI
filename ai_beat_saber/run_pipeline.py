@@ -6,6 +6,8 @@ import asyncio
 from pathlib import Path
 import argparse
 import json
+from typing import Any, Dict, List
+from tqdm import tqdm
 
 from ai_beat_saber.downloader.scrape_and_download import BeatSaverDownloader
 from ai_beat_saber.extractor.extract_maps import MapExtractor
@@ -70,10 +72,40 @@ async def run_pipeline(args):
         }, f, indent=2)
     
     print("Converting audio to MIDI...")
-    converter.convert_all()
+    conversion_results = await converter.convert_all()
+    
+    # Process conversion results
+    successful_conversions = []
+    failed_conversions = []
+    
+    for result in conversion_results:
+        if isinstance(result, Exception):
+            failed_conversions.append(str(result))
+        elif isinstance(result, Path):
+            successful_conversions.append(str(result))
+    
+    # Log conversion results
+    conversion_log = dirs["logs"] / "conversion_results.json"
+    with open(conversion_log, 'w', encoding='utf-8') as f:
+        json.dump({
+            'total_attempted': len(conversion_results),
+            'successful': len(successful_conversions),
+            'failed': len(failed_conversions),
+            'successful_files': successful_conversions,
+            'errors': failed_conversions
+        }, f, indent=2)
+    
+    print(f"Audio conversion complete: {len(successful_conversions)} succeeded, {len(failed_conversions)} failed")
+    
+    if failed_conversions:
+        print("\nSome conversions failed. Check conversion_results.json for details.")
     
     print("Formatting data...")
-    formatted_data = formatter.format_all()
+    try:
+        formatted_data = formatter.format_all()
+    except NotImplementedError:
+        print("Data formatting not yet implemented")
+        return
     
     if args.generate:
         print("Generating new maps...")
