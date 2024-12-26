@@ -3,8 +3,8 @@ import json
 from pathlib import Path
 import mido
 
-from ai_beat_saber.llm_prompting.generate_maps import MapGenerator
-from ai_beat_saber.preprocessor.preprocess_song import YouTubePreprocessor
+from beatcrafter_ai.llm_prompting.generate_maps import MapGenerator
+from beatcrafter_ai.preprocessor.preprocess_song import YouTubePreprocessor
 
 # Optional package for progress bars
 tqdm = pytest.importorskip("tqdm")
@@ -116,7 +116,7 @@ def map_generator(formatted_dir, output_dir):
     # Look for training data in the project root
     training_data_dir = Path("training_data")
     if not training_data_dir.exists():
-        pytest.skip("Training data not found. Please run run_full_pipeline.py first.")
+        pytest.skip("Training data not found. Please run example.py first (see README.md for usage instructions).")
     
     # Copy training data to the test directory
     import shutil

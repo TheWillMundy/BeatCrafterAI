@@ -2,7 +2,7 @@ import pytest
 import asyncio
 from pathlib import Path
 import mido  # We'll use this to validate the MIDI output
-from ai_beat_saber.converter.convert_audio import AudioConverter
+from beatcrafter_ai.converter.convert_audio import AudioConverter
 
 @pytest.fixture
 def audio_converter(temp_extract_dir):

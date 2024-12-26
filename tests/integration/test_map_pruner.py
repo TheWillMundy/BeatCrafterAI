@@ -4,7 +4,7 @@ import pytest
 import json
 from pathlib import Path
 
-from ai_beat_saber.post_processor.prune_maps import MapPruner
+from beatcrafter_ai.post_processor.prune_maps import MapPruner
 
 # Optional package for progress bars
 tqdm = pytest.importorskip("tqdm")
@@ -25,7 +25,7 @@ def training_dir(tmp_path):
     # Look for training data in the project root
     training_data_dir = Path("training_data")
     if not training_data_dir.exists():
-        pytest.skip("Training data not found. Please run run_full_pipeline.py first.")
+        pytest.skip("Training data not found. Please run example.py first (see README.md for usage instructions).")
     
     # Copy training data to the test directory
     import shutil

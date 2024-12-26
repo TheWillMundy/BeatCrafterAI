@@ -10,7 +10,7 @@ import soundfile as sf
 import tempfile
 import os
 
-from ai_beat_saber.converter.convert_audio import AudioConverter
+from beatcrafter_ai.converter.convert_audio import AudioConverter
 
 class YouTubePreprocessor:
     """Download and preprocess YouTube songs for Beat Saber map generation."""

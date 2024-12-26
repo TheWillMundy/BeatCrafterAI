@@ -5,8 +5,8 @@ import json
 import shutil
 import asyncio
 
-from ai_beat_saber.extractor.extract_maps import MapExtractor
-from ai_beat_saber.downloader.scrape_and_download import BeatSaverDownloader
+from beatcrafter_ai.extractor.extract_maps import MapExtractor
+from beatcrafter_ai.downloader.scrape_and_download import BeatSaverDownloader
 
 # Optional package for progress bars
 tqdm = pytest.importorskip("tqdm")

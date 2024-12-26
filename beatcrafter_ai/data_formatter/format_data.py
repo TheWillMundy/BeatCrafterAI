@@ -78,7 +78,7 @@ class DataFormatter:
         # Load all difficulty .dat files
         difficulties = {}
         for dat_file in map_dir.glob("*.dat"):
-            if dat_file.name != "info.dat":
+            if dat_file.name.lower() != "info.dat":  # Case-insensitive check
                 with open(dat_file) as f:
                     difficulties[dat_file.name] = json.load(f)
         

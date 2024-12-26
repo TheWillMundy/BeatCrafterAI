@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
 
 """
-Example script that demonstrates how to call the AI Beat Saber pipeline
-from the ai_beat_saber package. This script follows a typical usage flow:
-1. Specify how many pages of ranked Beat Saber maps you want to download.
-2. Specify where the pipeline outputs should be stored.
-3. Request to generate new maps or not.
-4. Force the pipeline to rerun steps as needed.
-5. Specify the difficulty level to filter/prune.
+Example script demonstrating how to use the pipeline functionality
+from the beatcrafter_ai package. This script follows a typical usage flow:
 
-Usage:
-    python run_full_pipeline.py --pages 2 --output-dir ./my_pipeline_output --force
+1. Download maps from BeatSaver
+2. Extract the downloaded maps
+3. Convert audio to MIDI
+4. Format data for LLM training
+5. Generate new maps with LLM
+6. Post-process and prune maps
 
-Refer to the package code in ai_beat_saber/run_pipeline.py for the full pipeline details.
+Refer to the package code in beatcrafter_ai/run_pipeline.py for the full pipeline details.
 """
 
 import argparse
 import asyncio
-from ai_beat_saber.run_pipeline import run_pipeline
+from pathlib import Path
+from beatcrafter_ai.run_pipeline import run_pipeline
 
 async def main():
     parser = argparse.ArgumentParser(description="Example usage of the AI Beat Saber pipeline.")

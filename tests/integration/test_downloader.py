@@ -1,7 +1,7 @@
 import pytest
 from pathlib import Path
 
-from ai_beat_saber.downloader.scrape_and_download import BeatSaverDownloader
+from beatcrafter_ai.downloader.scrape_and_download import BeatSaverDownloader
 
 # Optional package for progress bars
 tqdm = pytest.importorskip("tqdm")

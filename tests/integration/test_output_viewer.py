@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 import pytest
-from ai_beat_saber.llm_prompting.generate_maps import MapGenerator
+from beatcrafter_ai.llm_prompting.generate_maps import MapGenerator
 
 @pytest.fixture
 def output_dir(tmp_path):
@@ -28,8 +28,8 @@ def test_save_map_output(output_dir, formatted_dir, example_midi_text):
     # Initialize the generator
     map_generator = MapGenerator(formatted_dir, output_dir)
     
-    # Generate a map
-    result = map_generator.generate_map(example_midi_text, "easy")
+    # Generate a map using Hard difficulty (currently the only supported difficulty)
+    result = map_generator.generate_map(example_midi_text, "Hard")
     
     # Save the output to a file in the current directory
     output_file = Path("map_output.json")

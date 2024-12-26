@@ -9,12 +9,12 @@ import json
 from typing import Dict, Any, List
 from tqdm import tqdm
 
-from ai_beat_saber.downloader.scrape_and_download import BeatSaverDownloader
-from ai_beat_saber.extractor.extract_maps import MapExtractor
-from ai_beat_saber.converter.convert_audio import AudioConverter
-from ai_beat_saber.data_formatter.format_data import DataFormatter
-from ai_beat_saber.llm_prompting.generate_maps import MapGenerator
-from ai_beat_saber.post_processor.prune_maps import MapPruner
+from beatcrafter_ai.downloader.scrape_and_download import BeatSaverDownloader
+from beatcrafter_ai.extractor.extract_maps import MapExtractor
+from beatcrafter_ai.converter.convert_audio import AudioConverter
+from beatcrafter_ai.data_formatter.format_data import DataFormatter
+from beatcrafter_ai.llm_prompting.generate_maps import MapGenerator
+from beatcrafter_ai.post_processor.prune_maps import MapPruner
 
 def load_checkpoint(file_path: Path) -> Dict[str, Any]:
     """Load checkpoint data from a JSON file."""

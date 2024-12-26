@@ -4,7 +4,7 @@ from pathlib import Path
 import mido
 import yt_dlp
 
-from ai_beat_saber.preprocessor.preprocess_song import YouTubePreprocessor
+from beatcrafter_ai.preprocessor.preprocess_song import YouTubePreprocessor
 
 # Optional package for progress bars
 tqdm = pytest.importorskip("tqdm")

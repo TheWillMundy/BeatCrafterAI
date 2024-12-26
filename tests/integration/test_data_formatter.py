@@ -2,8 +2,9 @@ import pytest
 import json
 from pathlib import Path
 import pretty_midi
+import re
 
-from ai_beat_saber.data_formatter.format_data import DataFormatter
+from beatcrafter_ai.data_formatter.format_data import DataFormatter
 
 @pytest.fixture
 def data_formatter(temp_extract_dir, tmp_path):
@@ -75,6 +76,10 @@ def test_format_real_map(data_formatter, temp_extract_dir, test_data_zip):
     for diff_name, diff_data in result['difficulties'].items():
         print(f"\nVerifying difficulty: {diff_name}")
         print(f"Keys in difficulty data: {list(diff_data.keys())}")
+        
+        # Skip info.dat, it's not a difficulty file
+        if diff_name.lower() == 'info.dat':
+            continue
         
         # Verify difficulty data structure is preserved exactly
         assert any(key in diff_data for key in ['_notes', 'colorNotes', 'basicBeatmapEvents']), \
@@ -174,9 +179,10 @@ def test_format_map_missing_files(data_formatter, temp_extract_dir):
     
     # Test missing info.dat
     print("\nTesting missing info.dat case")
-    with pytest.raises(FileNotFoundError):
+    expected_error = f"No info.dat found in {test_folder}"
+    with pytest.raises(ValueError, match=re.escape(expected_error)):
         data_formatter.format_map(test_folder)
-    print("Successfully caught FileNotFoundError for missing info.dat")
+    print("Successfully caught ValueError for missing info.dat")
     
     # Create info.dat but missing difficulty files
     info_data = {
@@ -190,7 +196,7 @@ def test_format_map_missing_files(data_formatter, temp_extract_dir):
             }]
         }]
     }
-    info_path = test_folder / "info.dat"
+    info_path = test_folder / "Info.dat"  # Note the capital I to match game format
     with open(info_path, 'w') as f:
         json.dump(info_data, f)
     print(f"\nCreated test info.dat at: {info_path}")
@@ -205,4 +211,4 @@ def test_format_map_missing_files(data_formatter, temp_extract_dir):
     assert result['difficulties'] == {}
     assert result['midi_data'] is None
     
-    print("\nTest completed successfully") 
+    print("\nTest completed successfully")

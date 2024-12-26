@@ -19,7 +19,7 @@ This project provides a fully automated pipeline for acquiring and processing Be
 1. Clone the Repository  
    ┌───────────────────────  
    git clone <repo-url>  
-   cd ai-beat-saber  
+   cd beatcrafter-ai  
    └───────────────────────  
 
 2. Install System Dependencies  
@@ -54,7 +54,7 @@ After installation:
 
 • For advanced usage or custom scripts, import and call the pipeline directly:  
   ┌─────────────────────────────────────────────────────────
-  from ai_beat_saber.run_pipeline import run_pipeline
+  from beatcrafter_ai.run_pipeline import run_pipeline
   
   # Then pass your own argparse-like arguments
   └─────────────────────────────────────────────────────────
@@ -65,20 +65,20 @@ After installation:
   
   ┌──────────────────────────────────────  
   # Clean all pipeline outputs while keeping directory structure
-  python -m ai_beat_saber.cleanup
+  python -m beatcrafter_ai.cleanup
   
   # Clean specific directories (downloads, extracted, midi, etc.)
-  python -m ai_beat_saber.cleanup --targets downloads midi
+  python -m beatcrafter_ai.cleanup --targets downloads midi
   
   # Remove entire pipeline directory structure
-  python -m ai_beat_saber.cleanup --remove-structure
+  python -m beatcrafter_ai.cleanup --remove-structure
   └──────────────────────────────────────
 
 ## Project Layout
 | Folder/File                   | Description                                                   |
 |-------------------------------|---------------------------------------------------------------|
 | example.py                    | Example script showing how to use the package                |
-| ai_beat_saber/                | Main Python package with submodules                         |
+| beatcrafter_ai/              | Main Python package with submodules                         |
 | ├─ downloader/                | Downloading & scraping logic                                 |
 | ├─ extractor/                 | ZIP extraction & .dat file management                        |
 | ├─ converter/                 | Audio → MIDI conversion code                                 |
