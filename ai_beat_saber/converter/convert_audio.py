@@ -216,11 +216,19 @@ class AudioConverter:
             List of paths to the generated MIDI files or exceptions for failed conversions
         """
         audio_files = []
-        for ext in ('*.egg', '*.ogg', '*.mp3', '*.m4a'):  # Added mp3 and m4a
+        for ext in ('*.ogg', '*.egg', '*.mp3', '*.m4a', '*.wav'):  # Added wav
             audio_files.extend(self.songs_dir.rglob(ext))
         
         if not audio_files:
+            print(f"No audio files found in {self.songs_dir}")
+            print("Contents of directory:")
+            for item in self.songs_dir.rglob("*"):
+                print(f"  - {item.relative_to(self.songs_dir)}")
             return []
+        
+        print(f"Found {len(audio_files)} audio files to convert:")
+        for audio_file in audio_files:
+            print(f"  - {audio_file.relative_to(self.songs_dir)}")
         
         # Create tasks for each file
         tasks = [self.convert_audio(audio_file) for audio_file in audio_files]
@@ -234,8 +242,10 @@ class AudioConverter:
             try:
                 result = await task
                 results.append(result)
+                print(f"Successfully converted: {result}")
             except Exception as e:
                 results.append(e)
+                print(f"Failed to convert file: {str(e)}")
             pbar.update(1)
         
         pbar.close()

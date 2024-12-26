@@ -57,55 +57,52 @@ class DataFormatter:
         return "\n".join(text_representation)
     
     def format_map(self, map_dir: Path) -> Dict[str, Any]:
-        """Format a single map's data.
+        """Format a single map directory.
         
         Args:
-            map_dir: Directory containing map files
+            map_dir: Path to the map directory
             
         Returns:
-            Formatted map data for LLM
+            Formatted map data
         """
-        print(f"\nFormatting map in directory: {map_dir}")
-        
-        # Read info.dat
-        info_path = map_dir / 'info.dat'
+        # Load info.dat
+        info_path = map_dir / "info.dat"
         if not info_path.exists():
-            print(f"ERROR: info.dat not found in {map_dir}")
-            raise FileNotFoundError(f"info.dat not found in {map_dir}")
-            
+            raise ValueError(f"No info.dat found in {map_dir}")
+        
         with open(info_path) as f:
             info_data = json.load(f)
-        print(f"Loaded info.dat with fields: {list(info_data.keys())}")
-            
-        # Get all difficulty files
+        
+        print(f"Loaded info.dat from: {info_path}")
+        
+        # Load all difficulty .dat files
         difficulties = {}
-        if '_difficultyBeatmapSets' in info_data:
-            for beatmap_set in info_data['_difficultyBeatmapSets']:
-                for diff_map in beatmap_set['_difficultyBeatmaps']:
-                    diff_file = map_dir / diff_map['_beatmapFilename']
-                    if diff_file.exists():
-                        with open(diff_file) as f:
-                            difficulties[diff_map['_beatmapFilename']] = json.load(f)
-                            print(f"Loaded difficulty file: {diff_map['_beatmapFilename']}")
-                    else:
-                        print(f"Warning: Difficulty file not found: {diff_map['_beatmapFilename']}")
+        for dat_file in map_dir.glob("*.dat"):
+            if dat_file.name != "info.dat":
+                with open(dat_file) as f:
+                    difficulties[dat_file.name] = json.load(f)
         
         print(f"Found {len(difficulties)} difficulty files")
         
         # Get MIDI file if it exists (should be named same as directory with .mid extension)
-        # Look in data/midi folder relative to the workspace root
-        midi_path = Path("data") / "midi" / f"{map_dir.name}.mid"
+        # First try the pipeline's midi directory
+        midi_path = map_dir.parent.parent / "midi" / f"{map_dir.name}.mid"
         midi_text = None
         if midi_path.exists():
             midi_text = self._midi_to_text(midi_path)
             print(f"Converted MIDI file to text representation: {midi_path}")
         else:
             print(f"Warning: No MIDI file found at: {midi_path}")
-            # Try alternate location as fallback
-            alt_midi_path = map_dir.parent / "midi_output" / f"{map_dir.name}.mid"
-            if alt_midi_path.exists():
-                midi_text = self._midi_to_text(alt_midi_path)
-                print(f"Converted MIDI file from alternate location: {alt_midi_path}")
+            # Try alternate locations as fallback
+            alt_locations = [
+                map_dir / "midi_output" / f"{map_dir.name}.mid",  # Local midi_output directory
+                Path("data") / "midi" / f"{map_dir.name}.mid",    # Legacy data/midi directory
+            ]
+            for alt_path in alt_locations:
+                if alt_path.exists():
+                    midi_text = self._midi_to_text(alt_path)
+                    print(f"Converted MIDI file from alternate location: {alt_path}")
+                    break
         
         # Check for cover image
         cover_path = map_dir / "cover.jpg"
