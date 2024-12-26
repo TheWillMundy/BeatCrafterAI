@@ -4,7 +4,6 @@ Helper script to clean up pipeline outputs and cached data.
 
 import shutil
 from pathlib import Path
-import json
 import logging
 from typing import Optional, List
 
@@ -43,7 +42,7 @@ def clean_pipeline_outputs(base_dir: str = "pipeline_output",
         training_dir: Training data directory
         targets: Specific targets to clean. If None, clean all.
                 Options: ['downloads', 'extracted', 'midi', 'formatted', 
-                         'generated', 'logs', 'combined', 'training', 'all']
+                         'generated', 'logs', 'combined', 'pruned', 'training', 'all']
     """
     base_path = Path(base_dir)
     training_path = Path(training_dir)
@@ -57,6 +56,7 @@ def clean_pipeline_outputs(base_dir: str = "pipeline_output",
         'generated': base_path / "output/new_maps",
         'logs': base_path / "output/logs",
         'combined': base_path / "combined",
+        'pruned': base_path / "pruned",
         'training': training_path
     }
     
@@ -100,7 +100,7 @@ def main():
         "--targets",
         nargs="+",
         choices=['downloads', 'extracted', 'midi', 'formatted', 
-                'generated', 'logs', 'combined', 'training', 'all'],
+                'generated', 'logs', 'combined', 'pruned', 'training', 'all'],
         help="Specific targets to clean"
     )
     parser.add_argument(
